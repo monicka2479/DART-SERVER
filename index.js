@@ -1,56 +1,74 @@
-const express = require('express');
-const bodyParser = require('body-Parser');
-const cors = require('cors');
 
-const PORT = process.env.PORT || 3000;
+const express = require('express'),cors = require('cors');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const cookieParser=require('cookie-parser');
+const flash = require('express-flash');
+const multer=require('multer');
+const fs = require("fs");
+let GridFsStorage = require('multer-gridfs-storage');
+let Grid = require('gridfs-stream');
+// create express app
 const app = express();
 
-app.use(bodyParser.json());
-app.use(cors());
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }))
 
-app.get('/', function (req, res) {
-  res.send('Hello from server');
-})
+// parse requests of content-type - application/json
+app.use(bodyParser.json())
 
-var mongoose = require('mongoose');
+app.use(session({
+    cookie: { maxAge: 60000 },
+    saveUninitialized: true,
+    resave: 'true',
+    secret: 'secret'
+}));
 
-// make a connection
-mongoose.connect('mongodb://localhost:27017/dart', { useNewUrlParser: true });
+/* require("./config-success")(app); */
+ app.use(flash());
 
-// get reference to database
-var db = mongoose.connection;
+var originsWhitelist = [
+    'http://localhost:4200','http://localhost:4201',      //this is my front-end url for development
+  
+     'http://www.myproductionurl.com',
+  ];
+  var corsOptions = {
+    origin: function(origin, callback){
+          var isWhitelisted = originsWhitelist.indexOf(origin) !== -1;
+          callback(null, isWhitelisted);
+    },
+    credentials:true,
+    allowedHeaders: ['sessionId', 'Content-Type'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  }
+  
+  //here is the magic
+  app.use(cors(corsOptions));
 
-db.on('error', console.error.bind(console, 'connection error:'));
+// define a simple route
+app.get('/', (req, res) => {
+    res.json({"message": "Welcome"});
+});
 
-db.once('open', function () {
-  console.log("Connection Successful!");
+require('./app/route/dart.route.js')(app);
+require('./app/route/query.route.js')(app);
 
-  app.post('/enroll', function (req, res) {
-    // console.log('Request body output '
-    //   + JSON.stringify(req.body));
-    try {
-      db.collection("tasks").insertMany(req.body);
-      console.log("Data inserted successfully");
-    } catch (e) {
-      console.log(e);
-    }
-  });
-})
+// listen for requests
+app.listen(3000, () => {
+    console.log("Server is listening on port 3000");
+});
 
-app.get('/select', function (req, res) {
-  console.log("inside select");
-  db.collection("tasks").find({}).toArray(function (err, result) {
-    console.log("after select");
-    if (err) throw err;
-    res.status(200);
-    console.log(result);
-    res.json(result);
-  })
-})
+const dbConfig = require('./config/db.config.js');
+const mongoose = require('mongoose');
 
-db.close();
+mongoose.Promise = global.Promise;
 
-app.listen(PORT, function () {
-  console.log('Server is running in ' +
-    'localhost port: ' + PORT);
-})
+// Connecting to the database
+mongoose.connect(dbConfig.url, {
+    useNewUrlParser: true
+}).then(() => {
+    console.log("Successfully connected to the database");    
+}).catch(err => {
+    console.log('Could not connect to the database. Exiting now...', err);
+    process.exit();
+});
