@@ -15,5 +15,6 @@ module.exports = (app) => {
 	// Dart Module
     const dart = require('../controller/dart.controller.js');
 	app.post('/dart_create', dart.create);   
-	app.get('/dart_select', dart.select);   
+	app.get('/dart_select', dart.select);  
+	app.get('/dart_selectSingle', dart.selectSingle);   
 }

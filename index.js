@@ -29,8 +29,7 @@ app.use(session({
 
 var originsWhitelist = [
     'http://localhost:4200','http://localhost:4201',      //this is my front-end url for development
-  
-     'http://www.myproductionurl.com',
+    'http://localhost:8100','http://www.myproductionurl.com',
   ];
   var corsOptions = {
     origin: function(origin, callback){

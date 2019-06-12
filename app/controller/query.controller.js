@@ -5,7 +5,6 @@ var fs=require("fs");
 exports.create = (req, res) => {
 
   console.log("inside create data:");
-  console.log("empId:" +req.body.empId);
   // Create a Query
   const query = new Query({        
     userName: req.body.userName, 
@@ -15,9 +14,9 @@ exports.create = (req, res) => {
 
   query.save()
   .then(data => {
-      req.flash("success", "Query "+query.userName +" Inserted Succesfully");
-      res.send(req.flash('success'));
-  }).catch(err => {
+    req.flash("success", "Query Inserted Succesfully");
+    res.send(req.flash('success'));
+}).catch(err => {
       console.log('Error');
       res.status(500).send({
          
