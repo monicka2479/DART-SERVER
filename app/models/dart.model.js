@@ -6,7 +6,8 @@ var dartSchema = new Schema({
     taskDate: String,
     fromTime: String,
     toTime: String,
-    plannedTask: String,
+    plannedTask: String,    
+    actualTask: String,
     remarks: String
 });
 module.exports = mongoose.model('darts', dartSchema);   

@@ -51,6 +51,7 @@ app.get('/', (req, res) => {
 
 require('./app/route/dart.route.js')(app);
 require('./app/route/query.route.js')(app);
+require('./app/route/version.route.js')(app);
 
 // listen for requests
 app.listen(3000, () => {
