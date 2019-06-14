@@ -19,4 +19,15 @@ exports.insert = (req, res) => {
       res.status(400).send("unable to save to database");
       });
 };
+exports.select = function(req, res) {
+  console.log("Inside select all");
+  Version.find({}, function(err, docs) {
+      }).then(data => {
+          res.send(data);
+      }).catch(err => {
+          res.status(500).send({
+              message: err.message || "Some error occurred while selecting the Query."
+          });
+      });
+};
 
