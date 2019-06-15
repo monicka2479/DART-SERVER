@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var dartSchema = new Schema({
     userName: String,
-    taskDate: String,
+    taskDate: Date,
     fromTime: String,
     toTime: String,
     plannedTask: String,    

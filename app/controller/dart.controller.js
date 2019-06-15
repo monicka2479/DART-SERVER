@@ -1,29 +1,58 @@
 const Dart = require('../models/dart.model.js');
 var fs = require("fs");
 
-exports.create = (req, res) => {
-  console.log('Request body output '
-    + JSON.stringify(req.body));
+exports.create = (req, res) => {  
+    var dartArray = [];
+    for (var i in req.body) {
+      dartArray.push(req.body[i])
+      const DartObj = new Dart({        
+        userName: req.body.userName, 
+        taskDate: req.body.taskDate,
+        fromTime: req.body.fromTime, 
+        toTime: req.body.toTime,
+        plannedTask: req.body.plannedTask,
+        actualTask: req.body.actualTask, 
+        remarks: req.body.remarks
+      });
+    }
+
+    console.log('Request body output '
+    + JSON.stringify(dartArray));
   try {
-    Dart.insertMany(req.body)
+    Dart.insertMany(dartArray)
       .then(data => {
         req.flash("success", "Data Inserted Succesfully");
         res.send(req.flash('success'));
       })
   } catch (e) {
-    console.log(e);
+    console.log("Validation");
+    process.exit();
   }
 };
+
 exports.select = function (req, res) {
   console.log("Inside select all");
-  Dart.find({}, function (err, docs) {
-  }).then(data => {
-    res.send(data);
-  }).catch(err => {
-    res.status(500).send({
-      message: err.message || "Some error occurred while selecting the Dart."
+  const userName = req.params.userName;
+  const fromDate = req.params.fromDate;
+  const toDate = req.params.toDate;
+  console.log("inside select : " + userName, fromDate, toDate);
+  Dart.find({
+    'userName': userName,
+    'taskDate': {
+      $gte: fromDate,
+      $lte: toDate
+    }
+  }, function (err, docs) { }).
+    then(data => {
+      console.log('Database output'
+      + JSON.stringify(data));
+      res.send(data);
+    }).catch(err => {
+      console.log(err);
+      res.status(500).send({
+        message: err.message || "Some error occurred while selecting the Dart."
+      });
     });
-  });
 };
 
 exports.selectSingle = function (req, res) {

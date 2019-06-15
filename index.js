@@ -2,15 +2,11 @@
 const express = require('express'),cors = require('cors');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const cookieParser=require('cookie-parser');
 const flash = require('express-flash');
-const multer=require('multer');
-const fs = require("fs");
-let GridFsStorage = require('multer-gridfs-storage');
-let Grid = require('gridfs-stream');
 // create express app
 const app = express();
-
+date = new Date();
+console.log(date.toISOString());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }))
 
