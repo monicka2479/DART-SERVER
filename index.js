@@ -50,8 +50,9 @@ require('./app/route/query.route.js')(app);
 require('./app/route/version.route.js')(app);
 
 // listen for requests
-app.listen(3000, () => {
-    console.log("Server is listening on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log("Server is listening on port "+PORT);
 });
 
 const dbConfig = require('./config/db.config.js');
