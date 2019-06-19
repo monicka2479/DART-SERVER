@@ -30,29 +30,34 @@ exports.create = (req, res) => {
   }
 };
 
-exports.select = function (req, res) {
+exports.select = function (req, res) { 
   console.log("Inside select all");
-  const userName = req.params.userName;
-  const fromDate = req.params.fromDate;
-  const toDate = req.params.toDate;
-  console.log("inside select : " + userName, fromDate, toDate);
-  Dart.find({
-    'userName': userName,
-    'taskDate': {
-      $gte: fromDate,
-      $lte: toDate
-    }
-  }, function (err, docs) { }).
-    then(data => {
+const userName = req.params.userName;
+const fromDate = req.params.fromDate;
+const toDate = req.params.toDate;
+console.log("inside select : " + userName, fromDate, toDate);
+Dart.find({
+  'userName': userName,
+  'taskDate': {
+    $gte: fromDate,
+    $lte: toDate
+  }
+}, function (err, docs) { }).
+  then(data => {
+    console.log("jnx"+data.length);
+   if(data.length!=0){
+     // console.log(data) 
       console.log('Database output'
-      + JSON.stringify(data));
-      res.send(data);
-    }).catch(err => {
-      console.log(err);
-      res.status(500).send({
-        message: err.message || "Some error occurred while selecting the Dart."
-      });
-    });
+    + JSON.stringify(data));
+    res.send(data);
+   }
+   else( next (new Error('No Record found')) )
+  }).catch(err => {
+    console.log(err);
+    res.status(500).send({
+      message: err.message || "Some error occurred while selecting the Dart."
+    }); 
+  });
 };
 
 exports.selectSingle = function (req, res) {
